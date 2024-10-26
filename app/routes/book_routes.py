@@ -23,7 +23,21 @@ def create_book():
     return response, 201
 
 
+@book_bp.get("")
+def get_all_books():
+    query = db.select(Book).order_by(Book.id)
+    books = db.session.scalars(query)
 
+    books_response = []
+    for book in books:
+        books_response.append(
+            {
+                "id": book.id,
+                "title": book.title,
+                "description": book.description,
+                }
+        )
+    return books_response
 
 # @book_bp.get("")
 # def get_all_books():
