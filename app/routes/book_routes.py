@@ -1,7 +1,29 @@
-from flask import Blueprint, abort, make_response
-#from app.models.books import books
+from flask import Blueprint, abort, make_response, request
+from app.models.books import Book
+from ..db import db
+
 
 book_bp = Blueprint("book_bp", __name__, url_prefix="/books")
+
+@book_bp.post("")
+def create_book():
+    request_body = request.get_json()
+    title = request_body["title"]
+    description = request_body["description"]
+    
+    new_book = Book(title=title, description=description)
+    db.session.add(new_book)
+    db.session.commit()
+
+    response = {
+        "id": new_book.id,
+        "title": new_book.title,
+        "description": new_book.description,
+    }
+    return response, 201
+
+
+
 
 # @book_bp.get("")
 # def get_all_books():
