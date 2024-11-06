@@ -1,18 +1,25 @@
 from flask import Flask
 from .db import db, migrate
 from .models.books import Book
-from .routes.book_routes import book_bp
+from .models.author import Author
+from .routes.book_routes import bp as book_bp
+from .routes.author_routes import bp as authors_bp
+import os
 
 #from .routes.hello_world_routes import hello_world_bp
-def create_app():
+def create_app(config=None):
     app = Flask(__name__)
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@localhost:5432/hello_books_development'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
+    if config:
+        app.config.update(config)
+        
     db.init_app(app)
     migrate.init_app(app, db)
 
     app.register_blueprint(book_bp)
-#    app.register_blueprint(hello_world_bp)
+    app.register_blueprint(authors_bp)
+
     return app
